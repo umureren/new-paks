@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "483835472818",
+    "project_id": "new-paks",
+    "storage_bucket": "new-paks.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483835472818:android:384f80fb5f67518414d2ab",
+        "android_client_info": {
+          "package_name": "com.example.paks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "483835472818-0qk83782uit0dpio11lv8i7d719ldj21.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNvr6tbU3poxDdf5K3Dk4-2GONFLThPs0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "483835472818-0qk83782uit0dpio11lv8i7d719ldj21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
