@@ -85,17 +85,30 @@ class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
                     try {
-                      final userResult =
-                      await firebaseAuth.signInWithEmailAndPassword(
-                          email: _email, password: _password);
+                      final userResult = await firebaseAuth.signInWithEmailAndPassword(
+                        email: _email,
+                        password: _password,
+                      );
                       print(userResult.user!.email! + "\nbaşarılı");
 
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomePage()));
-                    }
-                    catch (e) {
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
+                    } /* on FirebaseAuthException catch (e) {
+                      if (e.code == 'user-not-found') {
+                        // Kullanıcı bulunamadı, hata mesajını işleyebilirsiniz.
+                        setState(() {
+                          print("Kullanıcı bulunamadı. Lütfen bilgilerinizi kontrol edin.") ;
+                        });
+                      } else if (e.code == 'wrong-password') {
+                        // Yanlış şifre, hata mesajını işleyebilirsiniz.
+                        setState(() {
+                          _errorMessage = 'Yanlış şifre. Lütfen bilgilerinizi kontrol edin.';
+                        });
+                      }
+                      // Diğer hata durumlarını da burada işleyebilirsiniz.
+                    }*/ catch (e) {
                       setState(() {
                         _errorMessage = 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.';
                       });
@@ -103,7 +116,6 @@ class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
                       print(_errorMessage);
                     }
                   }
-
                 },
               ),
               ElevatedButton(
