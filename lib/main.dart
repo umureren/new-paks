@@ -12,6 +12,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+
   runApp(MyApp());
 }
 
@@ -38,3 +40,9 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+/*
+Uuid() { // BURAYA BAK*************************
+  var uuid = Uuid();
+  String carid = uuid.v4();
+  return carid;
+}*/

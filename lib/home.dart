@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:paks/rentCar.dart';
+
+import 'addCar.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -40,7 +43,11 @@ class _HomePageState extends State<HomePage>{
               width: 200,
               height: 60,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async{
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CarFormPage()));
 
                 },
                 child: Text('ARAÇ EKLE'),
@@ -51,7 +58,11 @@ class _HomePageState extends State<HomePage>{
               width: 200,
               height: 60,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async{
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CarListPage()));
 
                 },
                 child: Text('ARAÇ KİRALA'),
