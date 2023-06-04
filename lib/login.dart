@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:paks/sign.dart';
 import 'firebase_options.dart';
@@ -27,7 +26,7 @@ class EmailPasswordLoginPage extends StatefulWidget {
 
 class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
   final formKey = GlobalKey<FormState>();
-  late String _email, _password,_errorMessage;
+  late String _email, _password, _errorMessage;
   final firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -35,24 +34,62 @@ class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Email & Şifre Girişi'),
+        backgroundColor: Colors.purple,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      Icons.directions_car,
+                      size: 200.0,
+                      color: Colors.purple,
+                    ),
+                    Stack(
+                      children: [
+                        // Diğer widget'lar
+                        Positioned(
+                          top: 6, // Dikey konumu belirle
+                          left: 120, // Yatay konumu belirle
+                          child: Text(
+                            'PAKS',
+                            style: TextStyle(
+                              fontSize: 50.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 32.0),
               TextFormField(
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'E-posta',
                   hintText: 'example@gmail.com',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Lütfen e-posta adresinizi girin.';
-                  } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                      .hasMatch(value)) {
+                  } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                     return 'Lütfen geçerli bir e-posta adresi girin.';
                   }
                   return null;
@@ -61,10 +98,16 @@ class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
                   _email = value!;
                 },
               ),
+              SizedBox(height: 16.0),
               TextFormField(
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Şifre',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -81,6 +124,14 @@ class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
               SizedBox(height: 20.0),
               ElevatedButton(
                 child: Text('Giriş Yap'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.purple,
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                ),
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
@@ -95,20 +146,7 @@ class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
                         context,
                         MaterialPageRoute(builder: (context) => HomePage()),
                       );
-                    } /* on FirebaseAuthException catch (e) {
-                      if (e.code == 'user-not-found') {
-                        // Kullanıcı bulunamadı, hata mesajını işleyebilirsiniz.
-                        setState(() {
-                          print("Kullanıcı bulunamadı. Lütfen bilgilerinizi kontrol edin.") ;
-                        });
-                      } else if (e.code == 'wrong-password') {
-                        // Yanlış şifre, hata mesajını işleyebilirsiniz.
-                        setState(() {
-                          _errorMessage = 'Yanlış şifre. Lütfen bilgilerinizi kontrol edin.';
-                        });
-                      }
-                      // Diğer hata durumlarını da burada işleyebilirsiniz.
-                    }*/ catch (e) {
+                    } catch (e) {
                       setState(() {
                         _errorMessage = 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.';
                       });
@@ -118,20 +156,32 @@ class _EmailPasswordLoginPageState extends State<EmailPasswordLoginPage> {
                   }
                 },
               ),
+              SizedBox(height: 8.0),
               ElevatedButton(
                 child: Text('Hesap Oluştur'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.grey,
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                ),
                 onPressed: () async {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EmailPasswordSigninPage()));
+                    context,
+                    MaterialPageRoute(builder: (context) => EmailPasswordSigninPage()),
+                  );
                 },
               ),
-              ElevatedButton(
-                  child: Text('şifremi unuttum'),
-                  onPressed: () async {
-
-                  })
+              SizedBox(height: 8.0),
+              TextButton(
+                child: Text('Şifremi Unuttum'),
+                style: TextButton.styleFrom(
+                  primary: Colors.purple,
+                ),
+                onPressed: () async {},
+              ),
             ],
           ),
         ),

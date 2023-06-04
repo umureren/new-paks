@@ -1,75 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddressFormPage extends StatefulWidget {
+class AddAddressPage extends StatefulWidget {
   @override
-  _AddressFormPageState createState() => _AddressFormPageState();
+  _AddAddressPageState createState() => _AddAddressPageState();
 }
 
-class _AddressFormPageState extends State<AddressFormPage> {
-  final formKey = GlobalKey<FormState>();
-  late String city;
-  late String district;
-  late String street;
-  late String town;
+class _AddAddressPageState extends State<AddAddressPage> {
+  String city = '';
+  String district = '';
+  String street = '';
+  String town = '';
 
-  void _saveForm() async {
-    if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
-
-      // Firestore collection references
-      CollectionReference carsCollection = FirebaseFirestore.instance
+  void saveAddress() async {
+    try {
+      // "Cars" koleksiyonuna bağlanma
+      CollectionReference CarsCollection = FirebaseFirestore.instance
           .collection('Cars');
-      CollectionReference addressCollection = carsCollection.doc('CARS_ID')
-          .collection('address');
 
-      try {
-        // Add new address document to the address collection
-        await addressCollection.add({
-          'city': city,
-          'district': district,
-          'street': street,
-          'town': town,
-        });
+      // "Cars" koleksiyonundaki en son belgenin ID'sini alma
+      QuerySnapshot querySnapshot = await CarsCollection.limit(1).orderBy(
+          'timestamp', descending: true).get();
+      String lastCarDocumentId = querySnapshot.docs.first.id;
 
-        // Success message or navigation to another page
-        showDialog(
-          context: context,
-          builder: (context) =>
-              AlertDialog(
-                title: Text('Success'),
-                content: Text('Address details have been saved.'),
-                actions: [
-                  TextButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      // Optionally navigate to another page
-                    },
-                  ),
-                ],
+      // En son belgeye ait "address" koleksiyonuna bağlanma
+      CollectionReference addressCollection = CarsCollection.doc(
+          lastCarDocumentId).collection('address');
+
+      // Yeni adres belgesini Firestore'a ekleme
+      await addressCollection.add({
+        'city': city,
+        'district': district,
+        'street': street,
+        'town': town,
+      });
+
+      // Başarılı bir şekilde kaydedildiğinde kullanıcıya geri bildirim verme
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Başarılı'),
+            content: Text('Adres başarıyla kaydedildi.'),
+            actions: [
+              TextButton(
+                child: Text('Tamam'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-        );
-      } catch (e) {
-        // Error message
-        showDialog(
-          context: context,
-          builder: (context) =>
-              AlertDialog(
-                title: Text('Error'),
-                content: Text(
-                    'An error occurred while saving the address details.'),
-                actions: [
-                  TextButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
+            ],
+          );
+        },
+      );
+    } catch (error) {
+      print(error.toString());
+      // Hata durumunda kullanıcıya hata mesajı gösterme
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Hata'),
+            content: Text('Adres kaydedilirken bir hata oluştu.'),
+            actions: [
+              TextButton(
+                child: Text('Tamam'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-        );
-      }
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -77,69 +80,57 @@ class _AddressFormPageState extends State<AddressFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Address Form'),
+        title: Text('Adres Ekle'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                decoration: InputDecoration(labelText: 'City'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the city.';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  city = value!;
-                },
+        child: Column(
+          children: [
+            TextField(
+              onChanged: (value) {
+                setState(() {
+                  city = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Şehir',
               ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'District'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the district.';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  district = value!;
-                },
+            ),
+            TextField(
+              onChanged: (value) {
+                setState(() {
+                  district = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'İlçe',
               ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Street'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the street.';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  street = value!;
-                },
+            ),
+            TextField(
+              onChanged: (value) {
+                setState(() {
+                  street = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Cadde/Sokak',
               ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Town'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the town.';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  town = value!;
-                },
+            ),
+            TextField(
+              onChanged: (value) {
+                setState(() {
+                  town = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Kasaba/Mahalle',
               ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                child: Text('Save'),
-                onPressed: _saveForm,
-              ),
-            ],
-          ),
+            ),
+            ElevatedButton(
+              onPressed: saveAddress,
+              child: Text('Kaydet'),
+            ),
+          ],
         ),
       ),
     );

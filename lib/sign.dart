@@ -39,9 +39,10 @@ class EmailPasswordSigninPage extends StatefulWidget {
 
 class _EmailPasswordSigninPageState extends State<EmailPasswordSigninPage> {
   final formKey = GlobalKey<FormState>();
-  late String _email, _password,_name, _lastname;
+  late String _email, _password,_name, _lastname,_uid;
   final firebaseAuth = FirebaseAuth.instance;
   final firebaseFirestore = FirebaseFirestore.instance;
+
 
 
   @override
@@ -124,6 +125,7 @@ class _EmailPasswordSigninPageState extends State<EmailPasswordSigninPage> {
                 },
                 onSaved: (value) {
                   _lastname = value!;
+
                 },
               ),
               SizedBox(height: 20.0),
@@ -137,20 +139,26 @@ class _EmailPasswordSigninPageState extends State<EmailPasswordSigninPage> {
                       await firebaseAuth.createUserWithEmailAndPassword(
                           email: _email, password: _password);
                       formKey.currentState!.reset();
-                      try{
-                        final resultData = await firebaseFirestore.collection("Users").add({
-                          "name" : _name,
-                          "lastname" : _lastname,
+
+                      // Kullanıcı kaydı başarılı olduğunda UID'yi alın
+                      _uid = userResult.user!.uid;
+
+                      try {
+                        final resultData = await firebaseFirestore
+                            .collection("Users")
+                            .add({
+                          "name": _name,
+                          "lastname": _lastname,
+                          "uid": _uid,
                         });
-                      }
-                      catch (e) {
+                      } catch (e) {
                         print(e.toString());
                       }
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                              "Kullanici başariyla kaydedildi, lütfen giriş yapınız!"),
+                              "Kullanıcı başarıyla kaydedildi, lütfen giriş yapınız!"),
                         ),
                       );
 
@@ -165,6 +173,7 @@ class _EmailPasswordSigninPageState extends State<EmailPasswordSigninPage> {
                   }
                 },
               ),
+
             ],
           ),
         ),

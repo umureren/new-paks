@@ -1,6 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 
 import 'carAddress.dart';
 
@@ -11,62 +11,63 @@ class CarFormPage extends StatefulWidget {
 
 class _CarFormPageState extends State<CarFormPage> {
   final formKey = GlobalKey<FormState>();
-  late String brand;
+  late String marka;
   late String model;
-  late double price;
-  late String type;
-  late int year;
-  //late String carid;
-
-
-
-  void _saveForm() async {
+  late double fiyat;
+  late String tip;
+  late int yil;
+  late bool available = false;
+  void _saveForm(String uid) async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
-      // Firestore collection reference
-      CollectionReference carsCollection =
-          FirebaseFirestore.instance.collection('Cars');
+      // Firestore referansı
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Kullanıcının UID'sine sahip doküman referansı
+      DocumentReference userDocRef = firestore.collection('Users').doc(uid);
 
       try {
-        // Add new car document to the collection
-        await carsCollection.add({
-          'brand': brand,
+        // "cars" koleksiyonunu kullanıcının UID'sine sahip dokümana ekle
+        DocumentReference carDocRef = await userDocRef.collection('cars').add({
+          'marka': marka,
           'model': model,
-          'price': price,
-          'type': type,
-          'year': year,
-          //'carid': carid,
+          'fiyat': fiyat,
+          'tip': tip,
+          'yil': yil,
+          'available': available,
         });
 
-        // Success message or navigation to another page
+        // Araç referans ID'sini alın
+        String carId = carDocRef.id;
+
+        // Başarı iletişi veya başka bir sayfaya yönlendirme
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Success'),
-            content:
-                Text('araç bilgileri girildi lütfen adres bilgilerini girin'),
+            title: Text('Başarılı'),
+            content: Text('Araba detayları eklendi. Araç Referans ID: $carId'),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: Text('Tamam'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // Optionally navigate to another page
+                  // İsteğe bağlı olarak başka bir sayfaya yönlendirme yapabilirsiniz
                 },
               ),
             ],
           ),
         );
       } catch (e) {
-        // Error message
+        // Hata iletişi
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Error'),
-            content: Text('An error occurred while saving the car details.'),
+            title: Text('Hata'),
+            content: Text('Araba detayları kaydedilirken bir hata oluştu.'),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: Text('Tamam'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -78,11 +79,15 @@ class _CarFormPageState extends State<CarFormPage> {
     }
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Car Form'),
+        title: Text('Araç Formu'),
+        backgroundColor: Colors.purple,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -91,22 +96,22 @@ class _CarFormPageState extends State<CarFormPage> {
           child: Column(
             children: <Widget>[
               TextFormField(
-                decoration: InputDecoration(labelText: 'Brand'),
+                decoration: InputDecoration(labelText: 'Marka'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the brand.';
+                    return 'Lütfen markayı girin.';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  brand = value!;
+                  marka = value!;
                 },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Model'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the model.';
+                    return 'Lütfen modeli girin.';
                   }
                   return null;
                 },
@@ -115,59 +120,74 @@ class _CarFormPageState extends State<CarFormPage> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Price'),
+                decoration: InputDecoration(labelText: 'Fiyat'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the price.';
+                    return 'Lütfen fiyatı girin.';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  price = double.parse(value!);
+                  fiyat = double.parse(value!);
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Type'),
+                decoration: InputDecoration(labelText: 'Tip'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the type.';
+                    return 'Lütfen tipi girin.';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  type = value!;
+                  tip = value!;
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Year'),
+                decoration: InputDecoration(labelText: 'Yıl'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the year.';
+                    return 'Lütfen yılı girin.';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  year = int.parse(value!);
-                  //carid=Uuid();
-
+                  yil = int.parse(value!);
+                },
+              ),
+              SizedBox(height: 20.0),
+              CheckboxListTile(
+                title: Text('Kiralama Durumu'),
+                value: available,
+                onChanged: (value) {
+                  setState(() {
+                    available = value!;
+                  });
                 },
               ),
               SizedBox(height: 20.0),
               ElevatedButton(
-                child: Text('Save'),
-                onPressed: () {
+                child: Text('Kaydet'),
+
+                onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
-                    _saveForm();
 
-                    /*// Navigate to address page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AddressFormPage()),
-                    );*/
+                    // Geçerli kullanıcının UID'sini alın
+                    User? user = FirebaseAuth.instance.currentUser;
+                    String? uid = user?.uid;
+
+                    if (uid != null) {
+                      _saveForm(uid);
+
+                      // Adres sayfasına yönlendir
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddAddressPage()),
+                      );
+                    }
                   }
                 },
               ),
@@ -177,5 +197,4 @@ class _CarFormPageState extends State<CarFormPage> {
       ),
     );
   }
-
 }

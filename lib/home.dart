@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:paks/myCars.dart';
 import 'package:paks/rentCar.dart';
-
 import 'addCar.dart';
+import 'login.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -18,54 +20,134 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget{
+class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>{
+class _HomePageState extends State<HomePage> {
+  final firebaseAuth = FirebaseAuth.instance;
+
+  Future<void> _signOut() async {
+    await firebaseAuth.signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => EmailPasswordLoginPage()),
+          (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Hoşgeldiniz'),
+        backgroundColor: Colors.purple,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications),
+
+            onPressed: () {
+              // TODO: Kiralama istekleri sayfasına git
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Merhaba',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 200,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: () async{
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CarFormPage()));
+            SizedBox(height: 32),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 32),
+                child: ElevatedButton(
+                  child: Text('ARAÇ EKLE'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.purple,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  ),
 
-                },
-                child: Text('ARAÇ EKLE'),
+                  onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CarFormPage()),
+                    );
+                  },
+
+                ),
               ),
             ),
             SizedBox(height: 16),
-            SizedBox(
-              width: 200,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: () async{
-                  Navigator.push(
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 32),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.purple,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  ),
+                  onPressed: () async {
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => CarListPage()));
-
-                },
-                child: Text('ARAÇ KİRALA'),
+                      MaterialPageRoute(builder: (context) => MyCarListPage()),
+                    );
+                  },
+                  child: Text('ARAÇLARIM'),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 32),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.purple,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  ),
+                  onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CarListPage()),
+                    );
+                  },
+                  child: Text('ARAÇ KİRALA'),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 32),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.black54,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  ),
+                  onPressed: _signOut,
+                  child: Text('ÇIKIŞ YAP'),
+                ),
               ),
             ),
           ],
@@ -77,13 +159,14 @@ class _HomePageState extends State<HomePage>{
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.purple,
               ),
               child: Text(
-                'Side Bar',
+                'PAKS',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 35,
+                  fontFamily: 'AR CHRISTY'
                 ),
               ),
             ),
@@ -120,8 +203,4 @@ class _HomePageState extends State<HomePage>{
       ),
     );
   }
-
 }
-
-
-
