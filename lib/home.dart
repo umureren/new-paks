@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:paks/myCars.dart';
+import 'package:paks/profile.dart';
 import 'package:paks/rentCar.dart';
 import 'addCar.dart';
 import 'login.dart';
@@ -174,6 +175,11 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.person),
               title: Text('Profil'),
               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyProfilePage()),
+                );
+
                 // TODO: Profil sayfasına git
               },
             ),
